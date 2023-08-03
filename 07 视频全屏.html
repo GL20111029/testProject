@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <video id="myVideo" width="640" height="360" controls>
+    <source src="./video/01.mp4" type="video/mp4">
+    <source src="./video/02.mp4" type="video/mp4">
+    <source src="./video/03.mp4" type="video/mp4">
+  </video>
+
+  <select id="qualitySelector">
+    <option value="360">360p</option>
+    <option value="480">480p</option>
+    <option value="720">720p</option>
+  </select>
+
+  <script>
+    // 获取video元素
+    var video = document.getElementById("myVideo");
+
+    // 获取清晰度选择器元素
+    var qualitySelector = document.getElementById("qualitySelector");
+
+    // 监听清晰度选择器的变化事件
+    qualitySelector.addEventListener("change", function () {
+      // 获取用户选择的清晰度
+      var selectedQuality = qualitySelector.value;
+
+      // 根据选择的清晰度切换视频源
+      switch (selectedQuality) {
+        case "360":
+          video.src = "./video/01.mp4";
+          break;
+        case "480":
+          video.src = "./video/02.mp4";
+          break;
+        case "720":
+          video.src = "./video/03.mp4";
+          break;
+        default:
+          video.src = "./video/01.mp4";
+      }
+
+      // 重新加载视频
+      video.load();
+    });
+
+    // 监听全屏切换事件
+    document.addEventListener("fullscreenchange", function () {
+      console.log('进去document监听');
+      // 如果当前处于全屏状态
+      if (document.fullscreenElement) {
+        video.style.width = "100vw";
+        video.style.height = "100vh";
+      } else {
+        video.style.width = "auto";
+        video.style.height = "auto";
+      }
+    });
+
+    // 监听视频元素的双击事件
+    video.addEventListener("dblclick", function () {
+      console.log('进去video监听');
+      // 尝试进入全屏模式
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitRequestFullscreen) { /* Safari */
+        video.webkitRequestFullscreen();
+      } else if (video.msRequestFullscreen) { /* IE11 */
+        video.msRequestFullscreen();
+      }
+    });
+  </script>
+
+</body>
+
+</html>
+
+<style scoped>
+  video {
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  select {
+    font-size: 16px;
+    padding: 8px 12px;
+    margin: 16px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+</style>

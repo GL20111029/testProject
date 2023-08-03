@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>文件切片上传</title>
+</head>
+
+<body>
+  <input type="file" id="file-input">
+  <button id="upload-button">上传</button>
+  <!-- 
+    文件上传的流程：
+      1. 获取input框收到的文件
+      2. 获取文件的大小，定义每块切片的大小(CHUNK_SIZE)
+      3. 根据切片大小得到总共要切多少片(totalChunks),再定义当前所在切割的片数(currentChunck 从0开始)
+      4. 定义文件上传的方法,在方法内部就开始切割,利用file.slice进行切割,这个方法是继承自Blod对象,而blod对象正是二进制源文件对象.
+      5. 定义好起始切割位置(currentChunck * CHUNK_SIZE),和结束切割位置(CHUNK_SIZE+start)
+      6. 开始切片,切片完成后把切出来Blod对象添加到FromData中,再添加currentChunck、以及totalChunck,然后上传
+      7. 
+   -->
+  <script>
+    const CHUNK_SIZE = 1024 * 1024; // 每个切片的大小
+    let file; // 选择的文件对象
+    let currentChunk = 0; // 当前上传的切片序号
+    let totalChunks = 0; // 总切片数
+    let uploadUrl = 'http://localhost:3000'; // 上传接口的 URL
+
+    // 选择文件时触发
+    document.getElementById('file-input').addEventListener('change', function (event) {
+      file = event.target.files[0];
+      totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    });
+
+    // 点击上传按钮时触发
+    document.getElementById('upload-button').addEventListener('click', function () {
+      if (!file) {
+        alert('请先选择文件');
+        return;
+      }
+      uploadChunk();
+    });
+    // 
+    // 上传切片
+    function uploadChunk () {
+      let start = currentChunk * CHUNK_SIZE;
+      let end = Math.min(start + CHUNK_SIZE, file.size);
+      let chunk = file.slice(start, end); // 从文件中获取当前切片的数据
+
+      let formData = new FormData();
+      formData.append('file', chunk, file.name);
+      formData.append('chunk', currentChunk);
+      formData.append('totalChunks', totalChunks);
+
+      fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+      })
+        .then(function (response) {
+          if (response.ok) {
+            // 切片上传成功，继续上传下一个切片
+            currentChunk++;
+            if (currentChunk < totalChunks) {
+              uploadChunk();
+            } else {
+              // 所有切片上传完成
+              console.log('文件上传完成');
+            }
+          } else {
+            // 切片上传失败，重试该切片
+            console.error('切片上传失败');
+            uploadChunk();
+          }
+        })
+        .catch(function (error) {
+          // 切片上传失败，重试该切片
+          console.error('切片上传失败');
+          console.error(error);
+          uploadChunk();
+        });
+    }
+  </script>
+</body>
+
+</html>

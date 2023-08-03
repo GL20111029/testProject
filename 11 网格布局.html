@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网格布局</title>
+  <style>
+    .grid_box {
+      margin: 60px;
+      /* 声明一个容器 */
+      display: grid;
+      /*  声明列的宽度  */
+      grid-template-columns: repeat(5, 300px);
+      /*  声明行间距和列间距  */
+      /* grid-gap: 20px; */
+      /*  声明行的高度  第一个参数表示第一行 以此类推*/
+      /* grid-template-rows: px 300px; */
+    }
+
+    .grid_item {
+      padding-left: 50px;
+      font-size: 200%;
+      color: black;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+
+    .grid_item_text {
+      font-size: 24px;
+      text-align: left;
+    }
+
+    .grid_item:first-child {
+      border-left: none;
+    }
+
+    .grid_item:last-child {
+      border-right: none;
+    }
+
+    .grid_item_text>span {
+      display: inline-block;
+      padding: 4px;
+      border: green solid 1px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid_box">
+    <div class="grid_item">
+      <div>甲醛</div>
+      <div>18 mg/m<sup>3</sup></div>
+      <div class="grid_item_text"><span>正常</span></div>
+    </div>
+    <div class="grid_item">
+      <div>甲醛</div>
+      <div>18 mg/m<sup>3</sup></div>
+      <div class="grid_item_text"><span>正常</span></div>
+    </div>
+    <div class="grid_item">
+      <div>甲醛</div>
+      <div>18 mg/m<sup>3</sup></div>
+      <div class="grid_item_text"><span>正常</span></div>
+    </div>
+    <div class="grid_item">
+      <div>甲醛</div>
+      <div>18 mg/m<sup>3</sup></div>
+      <div class="grid_item_text"><span>正常</span></div>
+    </div>
+    <div class="grid_item">
+      <div>甲醛</div>
+      <div>18 mg/m<sup>3</sup></div>
+      <div class="grid_item_text"><span>正常</span></div>
+    </div>
+  </div>
+</body>
+
+</html>

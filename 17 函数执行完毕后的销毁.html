@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>函数执行完毕后的销毁</title>
+</head>
+
+<body>
+  <h1>结果1:</h1>
+  <h2 id="text"></h2>
+  <button id="print">打印结果1</button>
+  <button id="changePrint">修改结果1</button>
+  <input type="text" id="changeText">
+
+
+  <h1>结果2:</h1>
+  <h2 id="text2"></h2>
+  <button id="print2">打印结果1</button>
+  <button id="changePrint2">修改结果1</button>
+  <input type="text" id="changeText2">
+  <script>
+    window.onload = function () {
+
+      function func () {
+        let a = 1
+        return {
+          print (h, text) {
+            return function () {
+              h.innerText = a
+              text.value = ''
+            }
+          },
+          changePrint (v, show) {
+            a = v
+            show()
+          }
+        }
+      }
+      function init (context, button1, button2, input) {
+        const { changePrint, print } = func()
+        const h1 = document.getElementById(context)
+        const text = document.getElementById(input)
+        const show = print(h1, text)
+
+        document.getElementById(button1).addEventListener('click', show)
+
+        document.getElementById(button2).addEventListener('click', () => text.value.trim() && changePrint(text.value, show))
+      }
+
+      init('text', 'print', 'changePrint', 'changeText')
+      // 如果二者的结果不互相影响,那么就证明父函数的执行上下文在执行完毕之后就销毁了,父函数无法再对之前声明的变量进行引用
+      init('text2', 'print2', 'changePrint2', 'changeText2')
+
+      // 实际证明,当函数执行完毕后,就会销毁,与之前它的上下文所创建的变量对象断开连接,如无其它上下文引用,则被垃圾回收机制回收
+      // 当再次调用的时候,该函数又会创建对应的上下文,与之前的创建的可能未被回收的变量对象没有丝毫关系
+    }
+  </script>
+</body>
+
+</html>

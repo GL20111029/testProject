@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>柱状图连接</title>
+</head>
+
+<body>
+
+  <div id="chart"></div>
+  <script src=""></script>
+  <script>
+    // 初始化 ECharts 实例
+    var myChart = echarts.init(document.getElementById('chart'));
+
+    // 配置项
+    var option = {
+      xAxis: {
+        type: 'category',
+        data: ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          type: 'bar',
+          data: data
+        },
+        {
+          type: 'line', // 使用折线图来模拟连接线
+          symbol: 'none', // 隐藏折线上的标记点
+          lineStyle: {
+            color: 'rgba(0, 0, 0, 0.3)' // 连接线的颜色
+          },
+          data: data
+        }
+      ]
+    };
+
+    // 使用配置项绘制图表
+    myChart.setOption(option);
+  </script>
+</body>
+
+</html>

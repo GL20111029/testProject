@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeyUp</title>
+</head>
+
+<body>
+  <style>
+    .snak-item {
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+      float: left;
+      border: black 1px solid;
+    }
+
+    .snak-box::after {
+      content: '';
+      clear: both;
+      display: block;
+    }
+
+    .snak-box {
+      display: inline-block;
+    }
+  </style>
+  <div class="snak-box">
+    <div class="snak-item"></div>
+    <div class="snak-item"></div>
+    <div class="snak-item"></div>
+    <div class="snak-item"></div>
+  </div>
+
+
+  <script>
+    document
+    let timer = 0
+    let box = document.querySelector('.snak-box')
+    console.dir(box);
+    window.addEventListener('keyup', (e) => {
+      console.log(e.keyCode);
+      // 37 right
+      // 39 left
+      // 38 top
+      // 40 down
+      switch (e.keyCode) {
+        case 37:
+          console.log(37);
+          clearInterval(timer)
+          timer = setInterval(() => {
+            
+          }, interval);
+          break
+
+      }
+    })
+  </script>
+</body>
+
+</html>

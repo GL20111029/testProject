@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>闭包</title>
+</head>
+
+<body>
+  <h1 id="view">初始化中。。。</h1>
+  <button id="add">click++</button>
+  <button id="minus">click--</button>
+  <script>
+    /* 
+      闭包的有关结论：
+        1. JS中的作用域都是词法作用域，即静态作用域，我们将一个函数或者变量定义在哪里，那么它的作用域就在哪里
+        2. 作用域就是执行上下文，每一个上下文都有一个关联的变量对象，在执行JS代码的时候就会去创建
+        3. 每一个函数在创建的时候都会有它自己的上下文,通过作用域链连接在一起,共享变量对象(函数的变量对象我们一般称之为活动对象,因为它在函数被调用的时候才会创建,在函数执行完毕被销毁的时候就会被释放)
+        4. 函数在创建的时候，其作用域链中只有它外部上下文的变量对象，只有在函数被调用的时候，才会创建自己的变量对象，且在作用域链的最顶部
+        5. 函数在执行完毕后虽然是被销毁了,但是它的活动对象依旧在被其它函数继续引用,根据垃圾回收机制，它依旧存在于堆栈中，因此就形成了闭包
+        结论：闭包就是能够读取其它函数内部变量的函数，就是闭包
+
+      由上我们还可以得出两个个结论：
+        1. 作用域的就是执行上下文
+        2. 作用域链的作用就是用来访问外部上下文所定义的变量
+    */
+    function dataAndOprate () {
+      let count = 1
+      function add () {
+        ++count
+      }
+      function minus () {
+        --count
+      }
+      function view () {
+        document.getElementById('view').innerText = count
+      }
+      return { add, minus, view }
+    }
+    window.onload = function () {
+      const { add, minus, view } = dataAndOprate()
+      view()
+      document.getElementById('add').addEventListener('click', () => {
+        add()
+        view()
+      })
+      document.getElementById('minus').addEventListener('click', () => {
+        minus()
+        view()
+      })
+    }
+  </script>
+</body>
+
+</html>

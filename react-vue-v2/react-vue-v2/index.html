@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AntCampus Exam</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    .exam-content .tips {
+      text-align: center;
+      background-color: #fffbe6;
+      padding: 8px 12px;
+    }
+
+    .exam-content {
+      min-height: 100%;
+    }
+
+    .exam-content .tabs {
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .exam-content .tabs .tab {
+      flex: 1;
+      line-height: 50px;
+      background-color: #ffffff;
+      border-bottom: 2px solid #f5f5f5;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    .exam-content .tabs .tab.active {
+      color: #1677FF;
+      border-bottom: 2px solid #1677FF;
+    }
+
+    .exam-content .content .hiddenReactOrVue {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="exam-content">
+    <div class="tabs">
+      <div id="tabVue" class="tab">vue版试题</div>
+      <div id="tabReact" class="tab">react版试题</div>
+    </div>
+    <div class="tips">请选择Vue或者React框架进行开发</div>
+    <div class="content">
+      <div id="vue"></div>
+      <div id="react"></div>
+    </div>
+  </div>
+  <script>
+    const tabVue = document.getElementById('tabVue');
+    const tabReact = document.getElementById('tabReact');
+    const vue = document.getElementById('vue');
+    const react = document.getElementById('react');
+    function init() {
+      const curTabs = getTabs();
+      setTabClass(curTabs);
+      tabVue.onclick = () => {
+        setTabs('vue');
+        setTabClass('vue');
+      };
+      tabReact.onclick = () => {
+        setTabs('react');
+        setTabClass('react');
+      };
+    }
+
+    function setTabClass(tabs) {
+      if (tabs === 'vue') {
+        tabVue.className = 'tab active';
+        tabReact.className = 'tab';
+        vue.className = '';
+        react.className = 'hiddenReactOrVue';
+      } else {
+        tabReact.className = 'tab active';
+        tabVue.className = 'tab';
+        vue.className = 'hiddenReactOrVue';
+        react.className = '';
+      }
+    }
+
+    const key = 'TabsKey';
+
+    function setTabs(value) {
+      localStorage.setItem(key, value);
+    }
+    function getTabs() {
+      return localStorage.getItem(key) || 'vue';
+    }
+    init();
+  </script>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+
+</html>

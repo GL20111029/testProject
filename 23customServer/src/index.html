@@ -67,7 +67,7 @@
       }
 
       // 定义上传分片函数
-      async function uploadChunks (chunksList, hash, name) {
+      async function uploadChunks (chunksList, hash, name, doneChunks) {
         // 文件上传需要我们将切片转化为FormData对象
         // 关于这个对象，我们需要有以下几个字段： fileHash（文件名）、chunkHash（切片名）、chunk（切片对象）
         const formDataList = chunksList.map((item, index) => {
@@ -79,19 +79,21 @@
           formData.append('size', item.size)
           // 我们在控制台打印的时候可能看到的formData对象是个 FormData{} 的一个空对象 但实际上它并不是空的 我们可以使用 get('字段') 去获取添加的数据
           return formData
-        })
+        }).filter((item, index) => !doneChunks.includes(`${hash}_${index}`))
 
         let MAX_POOL = 6  // 请求池最大请求数
         let index = 0 // 上传到第几个
         let taskPool = []
         const doneCounter = 0
         let done = 0
-        const progressDom = document.body.querySelector('#progress')
+
+        // 定义并使用进度条hook
         function progressHook () {
+          const progressDom = document.body.querySelector('#progress')
           progressDom.style.display = 'block'
           progressDom.innerHTML = `上传中。。。。  0`
           function review (index) {
-            const progress = (done / chunksList.length * 100).toFixed(0)
+            const progress = (done / formDataList.length * 100).toFixed(0)
             progressDom.innerHTML = progress !== '100' ? `上传中。。。。  ${progress}%` : `上传完毕`
             if (chunksList.length === done) setTimeout(() => {
               progressDom.style.display = 'none'
@@ -101,12 +103,17 @@
           return review
         }
         const review = progressHook()
+
         // 开始文件上传 通过while来反复上传文件
-        while (index < chunksList.length) {
+        // 之前我们呢用的是chunkList切片的长度来判断有没有上传完毕
+        // 但是后端做了断点续传之后，就要改成用过滤后的formDataList的长度来判断
+        // while (index < chunksList.length) {
+        while (index < formDataList.length) {
           const task = fetch('http://localhost:8888/upload', {
             method: 'POST',
             body: formDataList[index++]
           })
+
           // 添加到请求池中
           taskPool.push(task)
           task.then(() => {
@@ -155,10 +162,11 @@
             })
           }).then(res => res.json())
             .then(data => {
-              t(data.ok)
+              t(data)
             })
         })
       }
+
       // 为上传组件添加上传时钩子
       document.body.querySelector('#upload').addEventListener('change', async (e) => {
         // 1. 文件切片
@@ -170,23 +178,25 @@
             到B的账号下面，供其使用。注意，是拷贝文件地址，而不是文件！
 
             为了使得计算过程不出现过长等待，这里采取的策略是仅第一个和最后一个文件全部参与计算（这种叫做抽样计算）
+            对于其确定文件在服务器中是否唯一的准确性，只能说只要参与运算的字节越多越准确 但是不准确的概率是极低的
             其它的只分别取取前中后各两个字节参与运算
             当然如果文件切片确实过大 可全部采取这种手段来计算HASH值
         */
         const fileHash = await calculateFileHash(chunks)
         // 在上传之前要先校验一下该文件是否已经上传过了
-        verify(fileHash, e.target.files[0].name).then(async res => {
-          if (res) {
+        verify(fileHash, e.target.files[0].name).then(async ({ data: { showUpload, uploadList } }) => {
+          if (showUpload) {
+            const fileName = e.target.files[0].name
+            // 上传之前做一次过滤
             // 3. 开始上传文件分片
-            await uploadChunks(chunks, fileHash, e.target.files[0].name)
+            await uploadChunks(chunks, fileHash, fileName, uploadList)
             // 4. 发起合并请求
-            mergeChunks(fileHash, e.target.files[0].name)
+            mergeChunks(fileHash, fileName)
             return
           }
-          alert('秒传成功！')
+          alert('上传成功')
         })
       })
-
     }
   </script>
 </body>

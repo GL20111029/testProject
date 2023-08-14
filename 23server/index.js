@@ -18,19 +18,33 @@ const extractExt = filename => {
   return filename.slice(filename.lastIndexOf('.'), filename.length)
 }
 
+// 取出文件夹中的所有切块的集合
+const createUploadedList = async (fileHash) => {
+  const pathLink = path.resolve(UPLOAD_DIRNAMR, fileHash)
+  return fse.existsSync(pathLink) ? fse.readdirSync(pathLink) : []
+}
+
 // 定义校验文件是否已上传接口
-app.post('/verify', function (req, res) {
+app.post('/verify', async function (req, res) {
   const { fileHash, fileName } = req.body
   if (fse.existsSync(path.resolve(UPLOAD_DIRNAMR, fileHash + extractExt(fileName)))) {
     res.status(200).json({
-      ok: false,
-      msg: '文件已存在 停止上传'
+      ok: true,
+      msg: '文件已存在 停止上传',
+      data: {
+        showUpload: false
+      }
     })
     return
   }
+  // 如果不存在该文件合并后的样例存在，那么继续上传
   res.status(200).json({
     ok: true,
-    msg: '第一次上传'
+    data: {
+      showUpload: true,
+      // 已上传文件
+      uploadList: await createUploadedList(fileHash)
+    }
   })
 })
 
@@ -57,7 +71,16 @@ app.post('/upload', function (req, res) {
     }
     // 将切片存放到这个文件夹下
     const oldPath = files['chunk'][0]['path']
-    await fse.move(oldPath, path.resolve(chunkPath, chunkHash))
+    try {
+      await fse.move(oldPath, path.resolve(chunkPath, chunkHash))
+    } catch (reson) {
+      console.log(`上传出现问题 问题切片： ${chunkHash},该切片可能已存在`);
+      res.status(401).json({
+        ok: false,
+        msg: `上传出现问题 问题切片： ${chunkHash}`
+      })
+      return
+    }
     res.status(200).json({
       ok: true,
       msg: '上传成功'

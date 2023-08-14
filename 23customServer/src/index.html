@@ -73,7 +73,7 @@
         const formDataList = chunksList.map((item, index) => {
           const formData = new FormData()
           formData.append('fileHash', hash)
-          formData.append('chunkHash', `${hash}-${index}`)
+          formData.append('chunkHash', `${hash}_${index}`)
           formData.append('fileName', name)
           formData.append('chunk', item)
           formData.append('size', item.size)
@@ -127,7 +127,6 @@
 
       // 发起合并请求
       function mergeChunks (fileHash, fileName) {
-        console.log('开始合并');
         fetch('http://localhost:8888/mergechunk', {
           method: 'POST',
           headers: {
@@ -138,16 +137,32 @@
             fileName,
             size: CHUNKS_SIZE
           })
-        }).then(res => {
-          console.log('合并成功')
         })
       }
 
+      // 定义校验文件是否上传过的函数
+      function verify (fileHash, fileName) {
+        return new Promise((t, f) => {
+          fetch('http://localhost:8888/verify', {
+            method: "POST",
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              fileHash,
+              fileName,
+              size: CHUNKS_SIZE
+            })
+          }).then(res => res.json())
+            .then(data => {
+              t(data.ok)
+            })
+        })
+      }
       // 为上传组件添加上传时钩子
       document.body.querySelector('#upload').addEventListener('change', async (e) => {
         // 1. 文件切片
         const chunks = createFileChunks(e.target.files[0])
-        console.log(e.target.files[0]);
         // 2. 计算文件Hash值
         /* 
             计算HASH值得目的就是因为我们在使用同一个文件服务后台的时候，A B两个用户可能上传同一个文件，假如A已经上传过这个文件了
@@ -159,10 +174,17 @@
             当然如果文件切片确实过大 可全部采取这种手段来计算HASH值
         */
         const fileHash = await calculateFileHash(chunks)
-        // 3. 开始上传文件分片
-        await uploadChunks(chunks, fileHash, e.target.files[0].name)
-        // 4. 发起合并请求
-        mergeChunks(fileHash, e.target.files[0].name)
+        // 在上传之前要先校验一下该文件是否已经上传过了
+        verify(fileHash, e.target.files[0].name).then(async res => {
+          if (res) {
+            // 3. 开始上传文件分片
+            await uploadChunks(chunks, fileHash, e.target.files[0].name)
+            // 4. 发起合并请求
+            mergeChunks(fileHash, e.target.files[0].name)
+            return
+          }
+          alert('秒传成功！')
+        })
       })
 
     }

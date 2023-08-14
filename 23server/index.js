@@ -13,6 +13,28 @@ app.use(cors())
 // 定义存放文件夹
 const UPLOAD_DIRNAMR = path.resolve(__dirname, 'uploads')
 
+// 定义提取文件名的函数
+const extractExt = filename => {
+  return filename.slice(filename.lastIndexOf('.'), filename.length)
+}
+
+// 定义校验文件是否已上传接口
+app.post('/verify', function (req, res) {
+  const { fileHash, fileName } = req.body
+  if (fse.existsSync(path.resolve(UPLOAD_DIRNAMR, fileHash + extractExt(fileName)))) {
+    res.status(200).json({
+      ok: false,
+      msg: '文件已存在 停止上传'
+    })
+    return
+  }
+  res.status(200).json({
+    ok: true,
+    msg: '第一次上传'
+  })
+})
+
+// 定义上传接口
 app.post('/upload', function (req, res) {
   const form = new multiparty.Form()
   // form.parse会对文件上传的数据做一个分割，将普通数据和二进制源文件数据分开
@@ -43,15 +65,51 @@ app.post('/upload', function (req, res) {
   })
 })
 
-app.post('/mergechunk', function (req, res) {
+// 切片合并
+app.post('/mergechunk', async function (req, res) {
   const { fileHash, fileName, size } = req.body
-  console.log(fileHash, fileName, size);
-  res.status(200).json({
-    ok: true,
-    msg: '合并成功'
+  // 假设已经存在该文件，那就不用合并了
+  const filePath = path.resolve(UPLOAD_DIRNAMR, fileHash + extractExt(fileName))
+  if (fse.existsSync(filePath)) {
+    res.status(200).json({
+      ok: true,
+      msg: '合并成功'
+    })
+    return
+  }
+
+  const chunkDir = path.resolve(UPLOAD_DIRNAMR, fileHash)
+  // 判断切片缓存文件夹是否存在
+  if (!fse.existsSync(chunkDir)) {
+    res.status(401).json({
+      ok: false,
+      msg: '请重新上传'
+    })
+  }
+
+  // 合并操作
+  const chunkPaths = await fse.readdir(chunkDir)
+  // 对读取到的文件名进行排序
+  chunkPaths.sort((a, b) => a.split('_')[1] - b.split('_')[1])
+  const chunkList = chunkPaths.map((item, index) => {
+    return new Promise((t, f) => {
+      const chunkPath = path.resolve(chunkDir, item)
+      const readStream = fse.createReadStream(chunkPath)
+      const writeStream = fse.createWriteStream(filePath, {
+        start: index * size,
+        end: (index + 1) * size
+      })
+      readStream.on('end', () => {
+        fse.unlink(chunkPath)
+        t()
+      })
+      readStream.pipe(writeStream)
+    })
   })
+  await Promise.all(chunkList)
+  fse.remove(chunkDir)
 })
 
 app.listen(8888, () => {
-  console.log('server is running on port 8080');
+  console.log('server is running on port 8888');
 })

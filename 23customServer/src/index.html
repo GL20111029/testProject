@@ -18,8 +18,7 @@
   <div id="progress">
     上传中。。。。
   </div>
-  <script src="./lib/cdnjs.cloudflare.com_ajax_libs_spark-md5_3.0.2_spark-md5.min.js"
-    referrerpolicy="no-referrer"></script>
+  <script src="./cdnjs.cloudflare.com_ajax_libs_spark-md5_3.0.2_spark-md5.min.js" referrerpolicy="no-referrer"></script>
   <script>
     window.onload = function () {
 
@@ -76,54 +75,72 @@
           formData.append('fileHash', hash)
           formData.append('chunkHash', `${hash}-${index}`)
           formData.append('fileName', name)
-          formData.append('chunks', item)
+          formData.append('chunk', item)
           formData.append('size', item.size)
           // 我们在控制台打印的时候可能看到的formData对象是个 FormData{} 的一个空对象 但实际上它并不是空的 我们可以使用 get('字段') 去获取添加的数据
           return formData
         })
 
-        // 开始文件上传 通过回调来反复上传文件
         let MAX_POOL = 6  // 请求池最大请求数
         let index = 0 // 上传到第几个
         let taskPool = []
         const doneCounter = 0
+        let done = 0
         const progressDom = document.body.querySelector('#progress')
         function progressHook () {
           progressDom.style.display = 'block'
-          function review () {
-
+          progressDom.innerHTML = `上传中。。。。  0`
+          function review (index) {
+            const progress = (done / chunksList.length * 100).toFixed(0)
+            progressDom.innerHTML = progress !== '100' ? `上传中。。。。  ${progress}%` : `上传完毕`
+            if (chunksList.length === done) setTimeout(() => {
+              progressDom.style.display = 'none'
+            }, 1000);
           }
 
           return review
         }
-        let counter = 0
-        progressHook()
-        async function uploadLoop () {
+        const review = progressHook()
+        // 开始文件上传 通过while来反复上传文件
+        while (index < chunksList.length) {
           const task = fetch('http://localhost:8888/upload', {
             method: 'POST',
-            body: formDataList[index]
+            body: formDataList[index++]
           })
-          let current = index
-          // 每次上传完成之后将该task踢出请求池
-          index++
-
           // 添加到请求池中
           taskPool.push(task)
-
           task.then(() => {
-            console.log(current);
+            // 每次上传完成之后将该task踢出请求池
+            done++
+            review()
             taskPool.splice(taskPool.findIndex(item => item === task), 1)
-          }).catch(() => {
-            taskPool.splice(taskPool.findIndex(item => item === task), 1)
+          }).catch((reson) => {
+            console.log(reson);
           })
-
           // 如果请求池中的数量已经达到最大了，那么需要等待一个请求的完成再继续后续的操作
           if (taskPool.length === MAX_POOL) await Promise.race(taskPool)
-          if (index < chunksList.length) uploadLoop()
         }
-        uploadLoop()
-        // 保险起见 最后退出的时候还是要promise.all 一下保证请求池全部执行完毕
+        // 保险起见 最后退出的时候还是要保证请求池全部执行完毕
         await Promise.all(taskPool)
+        console.log('所有文件上传完毕');
+      }
+
+      // 发起合并请求
+      function mergeChunks (fileHash, fileName) {
+        console.log('开始合并');
+        fetch('http://localhost:8888/mergechunk', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            fileHash,
+            fileName,
+            size: CHUNKS_SIZE
+          })
+        }).then(res => {
+          console.log('合并成功')
+        })
       }
 
       // 为上传组件添加上传时钩子
@@ -143,7 +160,9 @@
         */
         const fileHash = await calculateFileHash(chunks)
         // 3. 开始上传文件分片
-        uploadChunks(chunks, fileHash, e.target.files[0].name)
+        await uploadChunks(chunks, fileHash, e.target.files[0].name)
+        // 4. 发起合并请求
+        mergeChunks(fileHash, e.target.files[0].name)
       })
 
     }

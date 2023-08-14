@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件分片上传</title>
+  <style>
+    #progress {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="file" name="" id="upload">
+  <div id="progress">
+    上传中。。。。
+  </div>
+  <script src="./lib/cdnjs.cloudflare.com_ajax_libs_spark-md5_3.0.2_spark-md5.min.js"
+    referrerpolicy="no-referrer"></script>
+  <script>
+    window.onload = function () {
+
+      // 定义分片大小
+      let CHUNKS_SIZE = 1024 * 1024
+      // 定义文件分片函数
+      function createFileChunks (file) {
+        // 校验文件类型
+        if (Object.prototype.toString.call(file) != '[object File]') {
+          console.warn('该函数必须接收 [object File] 类型的数据')
+          return
+        }
+        let cur = 0 // 当前已分片大小
+        const chunks = []
+        while (cur < file.size) {
+          chunks.push(file.slice(cur, cur + CHUNKS_SIZE))
+          cur += CHUNKS_SIZE
+        }
+        return chunks
+      }
+
+      // 计算文件HASH值
+      function calculateFileHash (chunks) {
+        return new Promise((res, rej) => {
+          // 1. 第一个和最后一个全部参与运算
+          const target = []
+          const fileReader = new FileReader()
+          // 创建SparkMD5对象
+          const spark = new SparkMD5.ArrayBuffer()
+          chunks.forEach((ele, index) => {
+            if (index === 0 || index === chunks.length - 1) target.push(ele)
+            else {
+              // 2. 其它的各取前中后两个字节参与运算
+              target.push(ele.slice(0, 2))
+              target.push(ele.slice(CHUNKS_SIZE / 2, CHUNKS_SIZE / 2 + 2))
+              target.push(ele.slice(CHUNKS_SIZE - 2, CHUNKS_SIZE))
+            }
+          });
+          // 开始计算文件Hash  感兴趣的可以一直上传同一个文件 观察他们的Hash值是不是一样的
+          fileReader.readAsArrayBuffer(new Blob(target))
+          fileReader.onload = (e) => {
+            spark.append(e.target.result)
+            res(spark.end())
+          }
+        })
+      }
+
+      // 定义上传分片函数
+      async function uploadChunks (chunksList, hash, name) {
+        // 文件上传需要我们将切片转化为FormData对象
+        // 关于这个对象，我们需要有以下几个字段： fileHash（文件名）、chunkHash（切片名）、chunk（切片对象）
+        const formDataList = chunksList.map((item, index) => {
+          const formData = new FormData()
+          formData.append('fileHash', hash)
+          formData.append('chunkHash', `${hash}-${index}`)
+          formData.append('fileName', name)
+          formData.append('chunks', item)
+          formData.append('size', item.size)
+          // 我们在控制台打印的时候可能看到的formData对象是个 FormData{} 的一个空对象 但实际上它并不是空的 我们可以使用 get('字段') 去获取添加的数据
+          return formData
+        })
+
+        // 开始文件上传 通过回调来反复上传文件
+        let MAX_POOL = 6  // 请求池最大请求数
+        let index = 0 // 上传到第几个
+        let taskPool = []
+        const doneCounter = 0
+        const progressDom = document.body.querySelector('#progress')
+        function progressHook () {
+          progressDom.style.display = 'block'
+          function review () {
+
+          }
+
+          return review
+        }
+        let counter = 0
+        progressHook()
+        async function uploadLoop () {
+          const task = fetch('http://localhost:8888/upload', {
+            method: 'POST',
+            body: formDataList[index]
+          })
+          let current = index
+          // 每次上传完成之后将该task踢出请求池
+          index++
+
+          // 添加到请求池中
+          taskPool.push(task)
+
+          task.then(() => {
+            console.log(current);
+            taskPool.splice(taskPool.findIndex(item => item === task), 1)
+          }).catch(() => {
+            taskPool.splice(taskPool.findIndex(item => item === task), 1)
+          })
+
+          // 如果请求池中的数量已经达到最大了，那么需要等待一个请求的完成再继续后续的操作
+          if (taskPool.length === MAX_POOL) await Promise.race(taskPool)
+          if (index < chunksList.length) uploadLoop()
+        }
+        uploadLoop()
+        // 保险起见 最后退出的时候还是要promise.all 一下保证请求池全部执行完毕
+        await Promise.all(taskPool)
+      }
+
+      // 为上传组件添加上传时钩子
+      document.body.querySelector('#upload').addEventListener('change', async (e) => {
+        // 1. 文件切片
+        const chunks = createFileChunks(e.target.files[0])
+        console.log(e.target.files[0]);
+        // 2. 计算文件Hash值
+        /* 
+            计算HASH值得目的就是因为我们在使用同一个文件服务后台的时候，A B两个用户可能上传同一个文件，假如A已经上传过这个文件了
+            那么B再上传的时候先去后台寻找有没有这个HASH的上传记录，如果有那么就不再接收B上传的文件，直接将A上传之后的文件地址拷贝
+            到B的账号下面，供其使用。注意，是拷贝文件地址，而不是文件！
+
+            为了使得计算过程不出现过长等待，这里采取的策略是仅第一个和最后一个文件全部参与计算（这种叫做抽样计算）
+            其它的只分别取取前中后各两个字节参与运算
+            当然如果文件切片确实过大 可全部采取这种手段来计算HASH值
+        */
+        const fileHash = await calculateFileHash(chunks)
+        // 3. 开始上传文件分片
+        uploadChunks(chunks, fileHash, e.target.files[0].name)
+      })
+
+    }
+  </script>
+</body>
+
+</html>

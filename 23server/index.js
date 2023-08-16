@@ -63,12 +63,11 @@ app.post('/upload', function (req, res) {
     }
     const fileHash = fields['fileHash'][0]
     const chunkHash = fields['chunkHash'][0]
+    fse.existsSync(UPLOAD_DIRNAMR) || await fse.mkdir(UPLOAD_DIRNAMR)
     // 将切片数据临时存放到一个文件夹
     const chunkPath = path.resolve(UPLOAD_DIRNAMR, fileHash)
     // 检验有没有这个文件的上传记录 没有创建上传目录
-    if (!fse.existsSync(chunkPath)) {
-      await fse.mkdir(chunkPath)
-    }
+    fse.existsSync(chunkPath) || await fse.mkdir(chunkPath)
     // 将切片存放到这个文件夹下
     const oldPath = files['chunk'][0]['path']
     try {

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24 手写bind,call,apply函数</title>
+</head>
+
+<body>
+  <!-- 手写call函数 -->
+  <script>
+    Function.prototype.mycall = function (thisArg, ...arg) {
+      const MYCALL = Symbol('mycall')
+      thisArg.__proto__[MYCALL] = this
+      const res = thisArg[MYCALL](...arg)
+      delete thisArg.__proto__[MYCALL]
+      return res
+    }
+
+    function test (a, b) {
+      console.log(this);
+      console.log('[ a ] ', a)
+      console.log('[ b ] ', b)
+
+    }
+
+    const obj = { name: "张三", age: 22 }
+
+    // test.mycall(obj, 2, 3)
+    // test.call(obj,2,3)
+
+    Function.prototype.myapply = function (thisArg, arg) {
+      const MYAPPLY = Symbol('myapply')
+      thisArg.__proto__[MYAPPLY] = this
+      const res = thisArg[MYAPPLY](...arg)
+      delete thisArg.__proto__[MYAPPLY]
+      return res
+    }
+
+    // test.myapply(obj, [1, 2, 3, 4])
+    // test.apply(obj, [1, 2, 3, 4])
+
+    Function.prototype.mybind = function (thisArg, ...arg) {
+      const MYBIND = Symbol('mybind')
+      thisArg.__proto__[MYBIND] = this
+      const resFunc = (...arg2) => {
+        const res = thisArg[MYBIND](...arg, ...arg2)
+        delete thisArg.__proto__[MYBIND]
+        return res
+      }
+      return resFunc
+    }
+
+    function eating (a, b, c, d) {
+      console.log(this);
+      console.log('a:', a);
+      console.log('b:', b);
+      console.log('c:', c);
+      console.log('d:', d);
+    }
+
+    const testBind = eating.mybind(obj, '武冈卤菜', '武冈铜鹅',)
+    testBind('南门米粉', `老冰棍`)
+    const testBind2 = eating.bind(obj, '西红柿炒蛋', '肠粉')
+    testBind2('猪脚饭', '冰可乐')
+  </script>
+</body>
+
+</html>

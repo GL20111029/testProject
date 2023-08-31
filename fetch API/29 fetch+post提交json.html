@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button class="request">发送请求</button>
+  <script>
+    // http://hmajax.itheima.net/api/register
+    // username: 用户名   password：密码
+
+    // fetch不会自动设置请求头，需要自己设置
+    const headers = new Headers()
+    headers.append('content-type', 'application/json')
+    document.querySelector('.request').addEventListener('click', async () => {
+      const request = await fetch(`http://hmajax.itheima.net/api/register`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          username: 'jkaslasl333',
+          password: '123456789'
+        })
+      })
+      const res = await request.json()
+      console.log(res);
+    })
+  </script>
+</body>
+
+</html>

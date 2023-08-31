@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <input type="file">
+  <img src="" alt="还没有图片" class="img">
+  <script>
+    document.querySelector('input').addEventListener('change', upload)
+    async function upload () {
+      const file = this.files[0]
+      const uploadObj = new FormData()
+      uploadObj.append('img', file)
+      const request = await fetch('http://hmajax.itheima.net/api/uploadimg', {
+        method: 'post',
+        // FormData 无需手动设置请求头
+        body: uploadObj
+      })
+
+      const res = await request.json()
+      console.log(res);
+      document.querySelector('.img').src = res.data.url
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <button class="request">发请求</button>
+
+  <script>
+    // feach 是一种新的web通信API，它的返回是一个promise对象  以此封装的库——umi-request
+    // XHR也是一种通信API，以此封装的库有——axios
+
+    document.querySelector('.request').addEventListener('click', async () => {
+      // // 1. fetch发起请求
+      // fetch('https://v.api.aa1.cn/api/api-wenan-shunkouliu/index.php?type=json').then(res => {
+      //   // 2. 调接口成功之后，再调json方法，获取解析之后的结果
+      //   res.json().then(body => {
+      //     console.log(body);
+      //   })
+      // })
+
+      // --------------- async写法 -------------
+      const response = await fetch('https://v.api.aa1.cn/api/api-wenan-shunkouliu/index.php?type=json')
+      const res = await response.json()
+      console.log(res);
+    })
+
+    // 
+  </script>
+</body>
+
+</html>

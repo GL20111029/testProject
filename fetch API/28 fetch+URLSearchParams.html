@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button class="request">发送请求</button>
+  <script>
+    document.querySelector('.request').addEventListener('click', async () => {
+      // 通过URLSearchParams包装查询参数
+      // const params = new URLSearchParams({ type: 'json', name: '张三' })
+      // 将对象转成 key=val 的格式，如果是中文，则会编码
+      // console.log(params.toString());   // type=json&name=%E5%BC%A0%E4%B8%89
+
+      // ----------------------
+      // pname:省份 cname：地级市名
+      const searchParams = new URLSearchParams({ pname: '湖南省', cname: '长沙市' })
+      const request = await fetch(`http://hmajax.itheima.net/api/area?${searchParams.toString()}`, {
+        method: 'GET'
+      })
+      const res = await request.json()
+      console.log(res);
+    })
+  </script>
+</body>
+
+</html>

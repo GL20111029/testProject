@@ -31,6 +31,3 @@ setInterval(() => {
   let id = idgenrator2()
   console.log(id);
 }, 1000)
-
-
-

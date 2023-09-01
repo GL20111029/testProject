@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator流程控制</title>
+</head>
+
+<body>
+  <button id="search">天气预报查询</button>
+  <script src="../node_modules/axios/dist//axios.js"></script>
+  <script>
+    function* searchWeather () {
+      yield axios('http://hmajax.itheima.net/api/weather?city=110100')
+      yield axios('http://hmajax.itheima.net/api/weather?city=310100')
+      yield axios('http://hmajax.itheima.net/api/weather?city=440100')
+      yield axios('http://hmajax.itheima.net/api/weather?city=440300')
+    }
+    // const weather = searchWeather()
+    // 依次查询北上广深的天气  调用方法
+    // 参考城市代码:  北京110100 上海310100 广州440100  深圳440300
+
+    // 以下是调用的方法 十分繁琐 可以封装一个函数用于解包输出
+    // const res1 = weather.next()
+    // res1.value.then(res => {
+    //   console.log(res);
+    // })
+
+    // 封装
+    function unpackPromiseOnGenerator (generator) {
+      const pack = generator.next()
+      if (Object.prototype.toString.call(pack.value) === '[object Promise]') {
+        pack.value.then((result) => {
+          console.log(result.data.data)
+        }).catch((err) => {
+          res = err
+        })
+      }
+    }
+
+    window.onload = function () {
+      const weather = searchWeather()
+      document.body.querySelector('#search').addEventListener('click', function () {
+        /* 
+          在假定没有async以及await的时代里面，不要试图将promise解包之后的值返回出来，只能在promise的then函数中去做后续操作，因为then里面的代码是异步代码
+        */
+        unpackPromiseOnGenerator(weather)
+      })
+    }
+
+    /* 
+      总之Generator在异步的流程控制中的使用是十分不方便的
+    */
+  </script>
+</body>
+
+</html>

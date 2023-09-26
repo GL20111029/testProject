@@ -1,0 +1,41 @@
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+
+	mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+	z-index: 1;
+}
+::view-transition-new(root) {
+	z-index: 9999;
+}
+.dark::view-transition-old(root) {
+	z-index: 9999;
+}
+.dark::view-transition-new(root) {
+	z-index: 1;
+}
+
+:root {
+	--bg-1: #fff;
+	--bg-2: #000;
+}
+
+body {
+	color: #000;
+	background-color: var(--bg-1);
+}
+
+.dark body {
+	color: #fff;
+	background: var(--bg-2);
+}
+
+/* body {
+	display: grid;
+
+	height: 100vh;
+
+	place-content: center;
+} */

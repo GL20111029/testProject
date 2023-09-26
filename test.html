@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .show-page-info {
+      display: inline-block;
+      margin-left: 10px;
+      margin-right: 10px;
+      font-size: 0;
+    }
+
+    .show-page-info span {
+      font-size: 15px;
+    }
+
+    .show-page-info .show_page_info-cur {
+      font-size: 13px;
+      color: rgb(53, 148, 252);
+      font-weight: 700;
+    }
+
+    .button {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 3px 1px;
+    }
+
+    .button:active {
+      background-color: rgb(248, 248, 248);
+      color: rgb(102, 95, 95);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="custom-pagenation">
+    <button class="prev button">上一页</button>
+    <div class="show-page-info">
+      <span class="show_page_info-cur">2</span>
+      <span>/</span>>
+      <span>
+        5</span>
+    </div>
+    <button class="next button">下一页</button>
+  </div>
+</body>
+
+</html>

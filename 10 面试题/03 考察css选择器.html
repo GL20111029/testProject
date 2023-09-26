@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考察css选择器</title>
+</head>
+
+<body>
+  <div class="box">
+    <span>面试</span>
+    <span>入职</span>
+  </div>
+  <style>
+    .box {
+      color: red;
+    }
+
+    /* 
+      2n+1 代表选择奇数个
+      2n   代表选择偶数个
+      还有一个重要的概念就是所有选择器的数字都是从1开始
+    */
+    span:nth-child(2n+1) {
+      color: green;
+    }
+
+    /* 
+    span:nth-of-type(1) {
+      color: blueviolet;
+    }
+
+    span:nth-of-type(3) {
+      color: skyblue;
+    } */
+  </style>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>html5</title>
+
+  <style>
+    #myVideo {
+      width: 400px;
+      /* height: 200px; */
+    }
+
+    #btn {
+      width: 400px;
+      height: 200px;
+    }
+
+    #result {
+      width: 400px;
+    }
+
+    #result img {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <video id="myVideo" src="./1.mp4" autoplay controls></video>
+  <br>
+  <button id="btn">截屏</button>
+  <div id="result"></div>
+
+  <script>
+    const video = document.body.querySelector('video')
+    document.body.querySelector('#btn').addEventListener('click', function () {
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext("2d")
+
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+
+      // 创建当前视频帧图片 用于展示以及上传服务器
+      const img = new Image()
+      img.src = canvas.toDataURL("image/png")
+      document.body.querySelector('#result').textContent = ''
+      document.body.querySelector('#result').appendChild(img)
+    })
+  </script>
+</body>
+
+</html>

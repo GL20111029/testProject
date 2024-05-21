@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>flex布局</title>
+
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .side {
+      float: left;
+      width: 255px;
+      height: 100vh;
+      background-color: rgb(44, 44, 44);
+      box-sizing: border-box;
+    }
+
+    .message_item {
+      width: 255px;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+
+    .message_box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .avata {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+    }
+
+    .message_info_time {
+      width: calc(255px - 40px);
+      margin-left: 10px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
+
+    .message_info {
+      color: white;
+      font-size: 14px;
+      width: 80%;
+      height: 100%;
+    }
+
+    .message_text {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: rgb(128, 128, 128);
+    }
+
+    .message_time {
+      font-size: 14px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="side">
+    <div class="message_item">
+      <div class="message_box">
+        <div>
+          <div class="avata"></div>
+        </div>
+        <div class="message_info_time">
+          <div class="message_info">
+            <div class="message_title">测试</div>
+            <div class="message_text">测试12a546545646545asjdkladf</div>
+          </div>
+          <div class="message_time">
+            <div>14:15</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    111
+    <div>222</div>
+  </div>
+  <style>
+    .box {
+      width: 100px;
+      height: 100px;
+      background-color: aqua;
+      float: left;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .box>div {
+      margin-top: 100px;
+    }
+  </style>
+</body>
+
+</html>

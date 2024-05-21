@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>canvas</title>
+</head>
+
+<body>
+  <div id="box" style="width: 100%;height: calc(100vh - 70px);">
+    <canvas id="canvas"></canvas>
+  </div>
+  <script>
+    const canvas = document.body.querySelector('#canvas')
+    const box = document.body.querySelector('#box')
+    canvas.addEventListener('contextmenu', (e) => {
+      // 禁止右击菜单的默认行为
+      e.preventDefault()
+      console.log('右击');
+    })
+    const resizeObserve = new ResizeObserver(() => {
+      canvas.width = box.clientWidth;
+      canvas.height = box.clientHeight;
+      canvas.style.width = canvas.width + 'px';
+      canvas.style.height = canvas.height + 'px';
+    })
+    resizeObserve.observe(box)
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .input-container {
+      position: relative;
+    }
+
+    #inputContent {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #f9f9f9;
+      padding: 5px;
+      border: 1px solid #ddd;
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="input-container">
+    <input type="text" name="" id="myInput">
+
+    <script>
+      let timer = null
+      const input = document.body.querySelector('#myInput')
+      input.addEventListener('mouseover', function () {
+        timer = setTimeout(() => {
+          var content = this.value
+          var inputContent = document.createElement('div')
+          inputContent.id = 'inputContent'
+          inputContent.innerHTML = content
+
+          this.parentNode.appendChild(inputContent)
+
+          this.addEventListener('mouseout', function () {
+            inputContent.style.display = 'none'
+          })
+
+          this.addEventListener('mousemove', function (e) {
+            inputContent.style.display = 'block'
+            inputContent.style.top = (e.clientY + 10) + 'px'
+            inputContent.style.left = (e.clientX + 10) + 'px'
+          })
+        }, 1500)
+      })
+      input.addEventListener('mouseout', function () {
+        clearTimeout(timer)
+      })
+    </script>
+  </div>
+</body>
+
+</html>

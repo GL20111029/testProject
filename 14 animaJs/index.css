@@ -82,7 +82,7 @@ a {
   height: 40px;
   border-radius: 50%;
   text-align: center;
-  box-shadow: 5px 5px 25px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 5px 5px 25px 0 rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;

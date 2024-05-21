@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo-index_html</title>
+  <style>
+    @media screen and (max-width: 550px) {
+      #app {
+        width: 100%;
+        /* background-color: black; */
+      }
+    }
+
+    @media screen and (min-width: 700px) {
+      #app {
+        width: 375px;
+        /* background-color: red; */
+      }
+    }
+
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    #app {
+      /* height: 3000px; */
+      background-color: #cccc;
+    }
+
+    .center {
+      margin: 0px auto;
+
+    }
+
+
+    .swiper {
+      width: 100%;
+      /* overflow: hidden; */
+      position: relative;
+    }
+
+    .swiper-item {
+      width: 100%;
+      position: absolute;
+    }
+
+    .swiper-item>img {
+      width: 100%;
+    }
+
+    /* 清除浮动 */
+    .clearfix::after {
+      content: '';
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
+    }
+
+    .swiper-action {
+      position: absolute;
+      width: 60%;
+      height: 10%;
+      background-color: rgba(100, 94, 89, .5);
+      border-radius: 50%;
+      bottom: 10px;
+      left: 10px;
+      z-index: 10;
+      padding: 10px;
+      vertical-align: middle;
+    }
+
+    .swiper-action .actionicon {
+      height: 100%;
+      margin-right: 10px;
+    }
+
+    .swiper-actio>.action:nth-child(0) {
+      margin-left: 10px;
+    }
+
+    .swiper-action>span {
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="center">
+    <!-- 轮播图 -->
+    <div class="swiper clearfix">
+      <div class="swiper-item">
+        <img src="./image/01.jpg" alt="">
+      </div>
+      <div class="swiper-item">
+        <img src="./image/02.jpg" alt="">
+      </div>
+      <div class="swiper-item">
+        <img src="./image/03.jpg" alt="">
+      </div>
+      <div class="swiper-item">
+        <img src="./image/04.jpg" alt="">
+      </div>
+      <!-- 操作空间 -->
+      <div class="swiper-action"></div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      // 初始化swiper组件
+      function init () {
+        const img = document.body.querySelectorAll('.swiper-item')
+        const parent = document.body.querySelector('.swiper')
+        parent.style.height = img[0].offsetHeight + 'px'
+        img[0].style['z-index'] = '4'
+        const swiperAction = document.body.querySelector('.swiper-action')
+        const srcArray = ['./image/01.jpg', './image/02.jpg', './image/03.jpg', './image/04.jpg']
+        const span = document.createElement('span')
+        span.innerHTML = `1/${srcArray.length}`
+        swiperAction.appendChild(span)
+        srcArray.forEach(element => {
+          const imgNode = document.createElement('img')
+          imgNode.src = element
+          imgNode.classList = 'actionicon'
+          swiperAction.appendChild(imgNode)
+        });
+      }
+      init()
+      window.addEventListener('resize', () => {
+        const img = document.body.querySelector('.swiper-item')
+        const parent = document.body.querySelector('.swiper')
+        parent.style.height = img.offsetHeight + 'px'
+        console.dir(img.offsetHeight);
+      })
+    }
+  </script>
+</body>
+
+</html>

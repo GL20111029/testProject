@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inline Flex Layout</title>
+    <style>
+        body {
+            background-color: #000;
+            /* 设置背景颜色为黑色 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .main-text {
+            font-size: 4em;
+            /* 创建渐变字体颜色 */
+            background: linear-gradient(to right, #ff6600, #ff9900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .sub-text {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            font-size: 0.8em;
+            opacity: 0.6;
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-text">1,000,000+ RMB</div>
+        <div class="sub-text">奖金总额</div>
+    </div>
+    <div class="note">*这计算了所有现金、代金券或其他形式的奖励</div>
+</body>
+
+</html>

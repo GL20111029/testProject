@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexbox with Transition</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      transition: all 0.5s ease;
+      /* 添加过渡动画 */
+    }
+
+    .header,
+    .footer {
+      background-color: lightcoral;
+      padding: 10px;
+      transition: height 0.5s ease;
+      /* 为高度变化添加过渡动画 */
+    }
+
+    .content {
+      background-color: lightgreen;
+      flex: 1;
+      padding: 10px;
+      transition: flex-grow 0.5s ease;
+      /* 为 flex-grow 添加过渡动画 */
+    }
+
+    .container.expanded .header,
+    .container.expanded .footer {
+      height: 100px;
+      /* 变化后的高度 */
+    }
+
+    .container.expanded .content {
+      flex-grow: 2;
+      /* 变化后的 flex-grow */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <div class="header">Header</div>
+    <div class="content">Content</div>
+    <div class="footer">Footer</div>
+  </div>
+
+  <button onclick="toggleExpand()">Toggle Expand</button>
+
+  <script>
+    function toggleExpand () {
+      document.getElementById('container').classList.toggle('expanded');
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Section Components</title>
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section {
+      background-color: #000;
+      color: #fff;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      flex: 1 1 calc(25% - 20px);
+      /* Adjust the percentage as needed */
+      box-sizing: border-box;
+    }
+
+    .section.small {
+      height: 100px;
+    }
+
+    .section.medium {
+      height: 200px;
+    }
+
+    .section.large {
+      height: 300px;
+    }
+
+    .section.x-large {
+      height: 400px;
+    }
+
+    .section.xx-large {
+      height: 500px;
+    }
+
+    .content {
+      margin-top: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .section {
+        flex: 1 1 calc(33.333% - 20px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .section {
+        flex: 1 1 calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .section {
+        flex: 1 1 calc(100% - 20px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="section small">
+      <div class="content">
+        线性资本
+      </div>
+    </div>
+    <div class="section medium">
+      <div class="content">
+        线性资本成立于2014年。聚焦“前沿科技+产业”方向的投资，即以尖端智能、数字孪生基建、新一代机器人技术及传统领域的前沿技术变革（如生物医疗、材料、能源等）为代表的硬科技，应用于多个垂直产业尤其新农业、工业等。基于前沿科技的巨大应用价值和趋势。
+      </div>
+    </div>
+    <div class="section large">
+      <div class="content">
+        在项目全生命周期内的长期支持下，我们选择并伴随有持续价值的早期项目成长。
+      </div>
+    </div>
+    <div class="section x-large">
+      <div class="content">
+        在项目全生命周期内的长期支持下，我们选择并伴随有持续价值的早期项目成长。
+      </div>
+    </div>
+    <div class="section xx-large">
+      <div class="content">
+        在项目全生命周期内的长期支持下，我们选择并伴随有持续价值的早期项目成长。
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    //远程请求
+    getData: (url, data, callback, showload = true, method = "POST") => {
+
+      //本地时间
+      const getTime = () => {
+        const today = new Date()
+        return today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate() + " "
+          + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+      }
+
+      //本地数据 获取
+      const locationData = (keys, data) => {
+        let isO = false
+        for (let vok in locationKeys) {
+          //console.log("----------", {vok,keys});
+          if (locationKeys[vok].keys == keys) {
+            isO = true
+          }
+          break
+        }
+        if (!isO) return false
+
+        //存数据
+        if (data) {
+          let dowData = {
+            data: data,
+            time: getTime()
+          }
+          uni.setStorage({
+            key: keys,
+            data: JSON.stringify(dowData)
+          });
+          return false
+        }
+
+        //取数据
+        const res = uni.getStorageSync(keys)
+        if (res) {
+          try {
+            const data = JSON.parse(res)
+            if (parseInt(new Date(data.time) - new Date()) / 1000 < locationKeys[vok].lentime) {
+              return data.data
+            }
+          } catch (e) {
+            return false
+          }
+        }
+        return false
+      }
+
+      const loacData = locationData(url)
+      if (loacData) {
+        typeof callback == "function" ? callback(loacData) : null
+        return false;
+      }
+
+      showload ? uni.showLoading({ title: "load..." }) : null;
+      let header = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      };
+
+      const userData = uni.getStorageSync("lastUsername");
+      header['Token'] = userData["token"];
+      header['Uid'] = userData["uid"];
+
+      let t1 = new Promise((resolve, reject) => {
+        uni.request({
+          url: HOST + url,
+          data, header,
+          method: method,
+          success: (res) => {
+            resolve(res.data);
+          },
+          error: (res) => {
+            reject("请求出错");
+          }
+        });
+      })
+
+      let t2 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject('请求超时');
+        }, 9000)
+      })
+
+      Promise.race([t1, t2]).then((redata) => {
+        if (redata.error == 1) {
+          uni.showToast({ title: redata.msg, icon: "error" });
+        }
+        typeof callback == "function" ? 
+      })
+      
+  </script>
+</body>
+
+</html>

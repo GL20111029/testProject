@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>步骤条组件</title>
+</head>
+
+<body>
+  <style>
+    .step-box {
+      width: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 5px;
+    }
+
+    .step-item {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .step,
+    .content {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .step {
+      display: flex;
+      height: 30px;
+      position: relative;
+    }
+
+    .step::before {
+      content: '';
+      width: 50%;
+      max-width: 30px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background-color: bisque;
+      position: absolute;
+      z-index: -999;
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      width: calc(50% / 2);
+      height: 2px;
+      background-color: rgb(132, 216, 132);
+      right: calc(0px - 50% / 2 / 2);
+    }
+
+    .step-item:last-child>.step::after {
+      display: none;
+    }
+
+    .content {
+      margin-top: 5px;
+    }
+  </style>
+
+  <div class="step-box">
+    <div class="step-item">
+      <div class="step">1</div>
+      <div class="content">1</div>
+    </div>
+    <div class="step-item">
+      <div class="step">2</div>
+      <div class="content">2</div>
+    </div>
+    <div class="step-item">
+      <div class="step">3</div>
+      <div class="content">3</div>
+    </div>
+    <div class="step-item">
+      <div class="step">4</div>
+      <div class="content">4</div>
+    </div>
+    <div class="step-item">
+      <div class="step">5</div>
+      <div class="content">5</div>
+    </div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-item">
+      <div class="step">1</div>
+      <div class="content">1</div>
+    </div>
+    <div class="step-item">
+      <div class="step">2</div>
+      <div class="content">2</div>
+    </div>
+    <div class="step-item">
+      <div class="step">3</div>
+      <div class="content">3</div>
+    </div>
+    <div class="step-item">
+      <div class="step">4</div>
+      <div class="content">4</div>
+    </div>
+    <div class="step-item">
+      <div class="step">5</div>
+      <div class="content">5</div>
+    </div>
+    <div class="step-item">
+      <div class="step">3</div>
+      <div class="content">3</div>
+    </div>
+    <div class="step-item">
+      <div class="step">4</div>
+      <div class="content">4</div>
+    </div>
+    <div class="step-item">
+      <div class="step">5</div>
+      <div class="content">5</div>
+    </div>
+  </div>
+</body>
+
+</html>
